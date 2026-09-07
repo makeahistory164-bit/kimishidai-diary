@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+
+# Xcode (旧ネイティブ検証時の残骸対策)
+.build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# Node / Expo
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+*.tsbuildinfo
+
+# Native build outputs (prebuild時に生成)
+ios/
+android/
+
+# Env
+.env
+.env.local
+
+# Logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
