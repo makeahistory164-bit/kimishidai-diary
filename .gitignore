@@ -27,3 +27,6 @@ android/
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+
+# 法務ページの公開サイト（独立したリポジトリ: kimishidai-diary-legal）
+legal-site/
