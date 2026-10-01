@@ -9,7 +9,10 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.kimishidai.diary"
+      "bundleIdentifier": "com.kimishidai.diary",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.kimishidai.diary",
@@ -33,6 +36,12 @@
       "expo-status-bar",
       "expo-sqlite",
       "expo-sharing"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b3534d8f-95fc-422e-ba48-828ad3e37542"
+      }
+    }
   }
 }
