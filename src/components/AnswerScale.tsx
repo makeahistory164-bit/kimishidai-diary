@@ -25,9 +25,7 @@ export function AnswerScale({ value, onChange }: Props) {
         return (
           <Pressable
             key={optionValue}
-            onPress={() => {
-              onChange(optionValue);
-            }}
+            onPress={() => onChange(optionValue)}
             style={[styles.option, selected && styles.optionSelected]}
             accessibilityRole="button"
             accessibilityState={{ selected }}
