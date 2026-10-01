@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { NEUTRAL_COLORS } from '@/constants/colors';
+import { TYPE, SPACING, RADIUS, MIN_TAP } from '@/constants/theme';
 
-const SCALE_LABELS = ['そう思わない', 'あまり思わない', 'やや思う', 'そう思う'];
+/** 回答値1〜4に対応するラベル。日別詳細でも同じ並びを使うのでここから import すること。 */
+export const SCALE_LABELS = ['そう思わない', 'あまり思わない', 'やや思う', 'そう思う'];
 
 interface Props {
   value: number | null; // 1-4
@@ -23,7 +25,9 @@ export function AnswerScale({ value, onChange }: Props) {
         return (
           <Pressable
             key={optionValue}
-            onPress={() => onChange(optionValue)}
+            onPress={() => {
+              onChange(optionValue);
+            }}
             style={[styles.option, selected && styles.optionSelected]}
             accessibilityRole="button"
             accessibilityState={{ selected }}
@@ -37,13 +41,15 @@ export function AnswerScale({ value, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  row: { flexDirection: 'row', gap: SPACING.sm, flexWrap: 'wrap' },
   option: {
     flexGrow: 1,
     flexBasis: '47%',
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 10,
+    minHeight: MIN_TAP,
+    justifyContent: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: RADIUS.control,
     borderWidth: 1,
     borderColor: NEUTRAL_COLORS.border,
     backgroundColor: NEUTRAL_COLORS.surface,
@@ -54,12 +60,12 @@ const styles = StyleSheet.create({
     borderColor: NEUTRAL_COLORS.accent,
   },
   optionText: {
-    fontSize: 13,
+    ...TYPE.subhead,
     color: NEUTRAL_COLORS.textPrimary,
     textAlign: 'center',
   },
   optionTextSelected: {
-    color: '#FFFFFF',
+    color: NEUTRAL_COLORS.onAccent,
     fontWeight: '600',
   },
 });

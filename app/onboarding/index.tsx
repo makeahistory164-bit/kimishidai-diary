@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { GradientScoreBar } from '@/components/GradientScoreBar';
 import { NEUTRAL_COLORS } from '@/constants/colors';
 import { INTEREST_THEME_OPTIONS } from '@/types/models';
@@ -50,8 +51,8 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.dots}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <View style={styles.dots} accessible={false} importantForAccessibility="no-hide-descendants">
         {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
           <View key={i} style={[styles.dot, i === step && styles.dotActive]} />
         ))}
@@ -95,7 +96,7 @@ export default function OnboardingScreen() {
           </View>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -164,7 +165,7 @@ function StepInterestThemes({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: NEUTRAL_COLORS.background, paddingTop: 60 },
+  container: { flex: 1, backgroundColor: NEUTRAL_COLORS.background },
   dots: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 24 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: NEUTRAL_COLORS.border },
   dotActive: { backgroundColor: NEUTRAL_COLORS.accent, width: 20 },
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
     backgroundColor: NEUTRAL_COLORS.accent,
     alignItems: 'center',
   },
-  primaryButtonText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },
+  primaryButtonText: { color: NEUTRAL_COLORS.onAccent, fontWeight: '700', fontSize: 15 },
   themeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
   themeChip: {
     paddingVertical: 8,
@@ -206,5 +207,5 @@ const styles = StyleSheet.create({
   },
   themeChipActive: { backgroundColor: NEUTRAL_COLORS.accent, borderColor: NEUTRAL_COLORS.accent },
   themeChipText: { color: NEUTRAL_COLORS.textPrimary, fontSize: 13 },
-  themeChipTextActive: { color: '#FFFFFF' },
+  themeChipTextActive: { color: NEUTRAL_COLORS.onAccent },
 });

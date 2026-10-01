@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
-  primaryButtonText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },
+  primaryButtonText: { color: NEUTRAL_COLORS.onAccent, fontWeight: '700', fontSize: 15 },
   secondaryButton: {
     paddingVertical: 12,
     borderRadius: 10,

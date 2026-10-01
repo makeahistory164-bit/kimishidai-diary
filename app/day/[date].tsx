@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { loadEntryDetailByDate } from '@/services/dailyEntryService';
 import { useTodayEntry } from '@/hooks/useTodayEntry';
 import { GradientScoreBar } from '@/components/GradientScoreBar';
 import { QuestionCard } from '@/components/QuestionCard';
+import { SCALE_LABELS } from '@/components/AnswerScale';
 import { normalizeAnswerValue, applyPolarity } from '@/services/axisScore';
 import { getAxisScoreColor, NEUTRAL_COLORS } from '@/constants/colors';
-import { toDateKey } from '@/lib/id';
+import { toDateKey, formatDateLabel } from '@/lib/id';
 import type { DailyEntryDetail } from '@/types/models';
 
 /** 8.3 日別詳細画面。当日のみ編集可、過去日は閲覧のみ。 */
@@ -89,8 +90,8 @@ function ReadOnlyDayView({ dateKey }: { dateKey: string }) {
   if (!entry) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
+        <Stack.Screen options={{ title: formatDateLabel(dateKey) }} />
         <View style={styles.content}>
-          <Text style={styles.dateHeading}>{dateKey}</Text>
           <Text style={styles.emptyText}>この日は記録がありません（未実施）。</Text>
         </View>
       </SafeAreaView>
@@ -99,8 +100,9 @@ function ReadOnlyDayView({ dateKey }: { dateKey: string }) {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
+      {/* 日付はヘッダーのtitleに出す。画面内にも見出しを置くと二重になる */}
+      <Stack.Screen options={{ title: formatDateLabel(dateKey) }} />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
-        <Text style={styles.dateHeading}>{dateKey}</Text>
         <GradientScoreBar score={entry.axisScore} />
 
         {entry.questions.map((q, i) => {
@@ -128,7 +130,6 @@ function ReadOnlyDayView({ dateKey }: { dateKey: string }) {
   );
 }
 
-const SCALE_LABELS = ['そう思わない', 'あまり思わない', 'やや思う', 'そう思う'];
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: NEUTRAL_COLORS.background },

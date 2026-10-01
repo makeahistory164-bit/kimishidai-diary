@@ -62,5 +62,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: NEUTRAL_COLORS.accent,
   },
-  buttonText: { color: '#FFFFFF', fontWeight: '600' },
+  buttonText: { color: NEUTRAL_COLORS.onAccent, fontWeight: '600' },
 });

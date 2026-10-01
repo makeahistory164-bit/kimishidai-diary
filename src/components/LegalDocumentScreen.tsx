@@ -13,7 +13,7 @@ export function LegalDocumentScreen({ document }: Props) {
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>{document.title}</Text>
+          {/* 文書名はネイティブヘッダーのtitleが出しているので、ここでは繰り返さない */}
           <Text style={styles.updated}>最終更新日: {document.lastUpdated}</Text>
           <Text style={styles.intro}>{document.intro}</Text>
         </View>

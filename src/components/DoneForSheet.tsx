@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   optionEmoji: { fontSize: 20 },
   optionLabel: { fontSize: 15, color: NEUTRAL_COLORS.textPrimary, fontWeight: '500' },
-  optionLabelSelected: { color: '#FFFFFF', fontWeight: '600' },
+  optionLabelSelected: { color: NEUTRAL_COLORS.onAccent, fontWeight: '600' },
   note: {
     fontSize: 12,
     color: NEUTRAL_COLORS.textSecondary,

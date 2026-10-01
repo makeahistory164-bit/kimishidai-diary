@@ -9,12 +9,15 @@ import {
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SymbolView } from 'expo-symbols';
 import { useTodos } from '@/hooks/useTodos';
 import { DoneForSheet } from '@/components/DoneForSheet';
 import { MascotSpeech } from '@/components/MascotSpeech';
 import type { MascotExpression } from '@/components/Mascot';
 import { NEUTRAL_COLORS } from '@/constants/colors';
 import { TODO_DONE_FOR_OPTIONS, type Todo, type TodoDoneFor } from '@/types/models';
+import { TYPE, SPACING, RADIUS, MIN_TAP, SCREEN_PADDING } from '@/constants/theme';
+import { SectionHeader } from '@/components/ui/SectionHeader';
 
 /**
  * キャラのセリフ。★未完了の件数には絶対に触れないこと。
@@ -104,9 +107,8 @@ export default function TodoScreen() {
   const speech = todoSpeech(total, done.length);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
-        <Text style={styles.screenTitle}>今日やること</Text>
         {total > 0 && (
           <Text style={styles.progress}>
             {completedCount} / {total} 完了
@@ -152,7 +154,7 @@ export default function TodoScreen() {
 
         {done.length > 0 && (
           <>
-            <Text style={styles.sectionLabel}>完了したこと</Text>
+            <SectionHeader title="完了したこと" />
             {done.map((todo) => (
               <TodoRow
                 key={todo.id}
@@ -194,14 +196,33 @@ function TodoRow({
 
   return (
     <View style={styles.todoRow}>
-      <Pressable onPress={onToggle} style={styles.checkbox} hitSlop={8}>
-        <Text style={styles.checkboxText}>{isDone ? '☑︎' : '☐'}</Text>
+      {/* 以前は ☐/☑︎ という文字で状態を描いていたため、VoiceOverが記号名を読み、
+          チェックボックスであることも状態も伝わらなかった */}
+      <Pressable
+        onPress={onToggle}
+        style={styles.checkbox}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: isDone }}
+        accessibilityLabel={todo.text}
+      >
+        <SymbolView
+          name={isDone ? 'checkmark.circle.fill' : 'circle'}
+          size={24}
+          tintColor={isDone ? NEUTRAL_COLORS.accent : NEUTRAL_COLORS.textSecondary}
+          resizeMode="scaleAspectFit"
+        />
       </Pressable>
 
-      <View style={{ flex: 1 }}>
+      <View style={styles.todoBody}>
         <Text style={[styles.todoText, isDone && styles.todoTextDone]}>{todo.text}</Text>
         {isDone && option && (
-          <Pressable onPress={onChangeDoneFor} hitSlop={6}>
+          <Pressable
+            onPress={onChangeDoneFor}
+            style={styles.doneForButton}
+            accessibilityRole="button"
+            accessibilityLabel={`誰のためか: ${option.label}`}
+            accessibilityHint="タップして変更します"
+          >
             <Text style={styles.doneForTag}>
               {option.emoji} {option.label}
             </Text>
@@ -209,8 +230,18 @@ function TodoRow({
         )}
       </View>
 
-      <Pressable onPress={onDelete} hitSlop={8} style={styles.deleteButton}>
-        <Text style={styles.deleteText}>×</Text>
+      <Pressable
+        onPress={onDelete}
+        style={styles.deleteButton}
+        accessibilityRole="button"
+        accessibilityLabel={`${todo.text} を削除`}
+      >
+        <SymbolView
+          name="xmark"
+          size={15}
+          tintColor={NEUTRAL_COLORS.textSecondary}
+          resizeMode="scaleAspectFit"
+        />
       </Pressable>
     </View>
   );
@@ -243,69 +274,72 @@ function DoneForBreakdown({ todos }: { todos: Todo[] }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: NEUTRAL_COLORS.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  content: { padding: 20, paddingBottom: 60, gap: 12 },
-  screenTitle: { fontSize: 24, fontWeight: '700', color: NEUTRAL_COLORS.textPrimary },
-  progress: { fontSize: 13, color: NEUTRAL_COLORS.textSecondary, marginTop: -6 },
-  addRow: { flexDirection: 'row', gap: 8, marginTop: 4 },
+  content: { padding: SCREEN_PADDING, paddingBottom: SPACING.xxl * 2, gap: SPACING.md },
+  progress: { ...TYPE.footnote, color: NEUTRAL_COLORS.textSecondary },
+  addRow: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.xs },
   addInput: {
     flex: 1,
+    minHeight: MIN_TAP,
     borderWidth: 1,
     borderColor: NEUTRAL_COLORS.border,
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 15,
+    borderRadius: RADIUS.control,
+    paddingHorizontal: SPACING.md,
+    ...TYPE.body,
     color: NEUTRAL_COLORS.textPrimary,
     backgroundColor: NEUTRAL_COLORS.surface,
   },
   addButton: {
-    paddingHorizontal: 18,
+    minHeight: MIN_TAP,
+    paddingHorizontal: SPACING.lg,
     justifyContent: 'center',
-    borderRadius: 10,
+    borderRadius: RADIUS.control,
     backgroundColor: NEUTRAL_COLORS.accent,
   },
-  addButtonText: { color: '#FFFFFF', fontWeight: '600' },
-  speechBlock: { marginTop: 8 },
-  speechTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: NEUTRAL_COLORS.textPrimary,
-    lineHeight: 22,
-  },
-  speechBody: { fontSize: 13, color: NEUTRAL_COLORS.textSecondary, lineHeight: 20 },
+  addButtonText: { ...TYPE.headline, color: NEUTRAL_COLORS.onAccent },
+  speechBlock: { marginTop: SPACING.sm },
+  speechTitle: { ...TYPE.headline, color: NEUTRAL_COLORS.textPrimary },
+  speechBody: { ...TYPE.subhead, color: NEUTRAL_COLORS.textSecondary },
   todoRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
+    alignItems: 'center',
+    gap: SPACING.md,
     backgroundColor: NEUTRAL_COLORS.surface,
-    borderRadius: 12,
+    borderRadius: RADIUS.card,
     borderWidth: 1,
     borderColor: NEUTRAL_COLORS.border,
-    padding: 14,
+    paddingHorizontal: SPACING.md,
   },
-  checkbox: { paddingTop: 1 },
-  checkboxText: { fontSize: 18, color: NEUTRAL_COLORS.textPrimary },
-  todoText: { fontSize: 15, color: NEUTRAL_COLORS.textPrimary, lineHeight: 22 },
+  // 見た目は記号だけだが、HIGの最小タップ寸法44ptを満たす
+  checkbox: {
+    width: MIN_TAP,
+    height: MIN_TAP,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: -SPACING.xs,
+  },
+  todoBody: { flex: 1, paddingVertical: SPACING.sm },
+  todoText: { ...TYPE.body, color: NEUTRAL_COLORS.textPrimary },
   todoTextDone: { color: NEUTRAL_COLORS.textSecondary, textDecorationLine: 'line-through' },
-  doneForTag: { fontSize: 12, color: NEUTRAL_COLORS.textSecondary, marginTop: 6 },
-  deleteButton: { paddingHorizontal: 4 },
-  deleteText: { fontSize: 18, color: NEUTRAL_COLORS.textSecondary },
-  sectionLabel: {
-    fontSize: 13,
-    color: NEUTRAL_COLORS.textSecondary,
-    marginTop: 12,
-    fontWeight: '600',
+  doneForButton: { minHeight: MIN_TAP, justifyContent: 'center' },
+  doneForTag: { ...TYPE.footnote, color: NEUTRAL_COLORS.textSecondary },
+  deleteButton: {
+    width: MIN_TAP,
+    height: MIN_TAP,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: -SPACING.xs,
   },
   breakdown: {
-    marginTop: 12,
-    padding: 16,
-    borderRadius: 12,
+    marginTop: SPACING.md,
+    padding: SPACING.lg,
+    borderRadius: RADIUS.card,
     backgroundColor: NEUTRAL_COLORS.surface,
     borderWidth: 1,
     borderColor: NEUTRAL_COLORS.border,
-    gap: 8,
+    gap: SPACING.sm,
   },
-  breakdownTitle: { fontSize: 13, fontWeight: '700', color: NEUTRAL_COLORS.textPrimary },
+  breakdownTitle: { ...TYPE.headline, color: NEUTRAL_COLORS.textPrimary },
   breakdownRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  breakdownLabel: { fontSize: 13, color: NEUTRAL_COLORS.textPrimary },
-  breakdownCount: { fontSize: 13, color: NEUTRAL_COLORS.textSecondary },
+  breakdownLabel: { ...TYPE.subhead, color: NEUTRAL_COLORS.textPrimary },
+  breakdownCount: { ...TYPE.subhead, color: NEUTRAL_COLORS.textSecondary },
 });

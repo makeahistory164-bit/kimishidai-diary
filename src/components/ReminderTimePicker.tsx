@@ -122,5 +122,5 @@ const styles = StyleSheet.create({
   },
   chipActive: { backgroundColor: NEUTRAL_COLORS.accent, borderColor: NEUTRAL_COLORS.accent },
   chipText: { fontSize: 14, color: NEUTRAL_COLORS.textPrimary },
-  chipTextActive: { color: '#FFFFFF', fontWeight: '700' },
+  chipTextActive: { color: NEUTRAL_COLORS.onAccent, fontWeight: '700' },
 });

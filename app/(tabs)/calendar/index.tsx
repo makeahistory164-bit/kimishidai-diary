@@ -27,16 +27,26 @@ export default function CalendarScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Pressable onPress={handlePrev} hitSlop={12}>
+          <Pressable
+            onPress={handlePrev}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="前の月"
+          >
             <Text style={styles.navArrow}>‹</Text>
           </Pressable>
-          <Text style={styles.monthLabel}>
+          <Text style={styles.monthLabel} accessibilityRole="header">
             {year}年 {month}月
           </Text>
-          <Pressable onPress={handleNext} hitSlop={12}>
+          <Pressable
+            onPress={handleNext}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="次の月"
+          >
             <Text style={styles.navArrow}>›</Text>
           </Pressable>
         </View>
@@ -123,7 +133,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   shareButtonDisabled: { opacity: 0.5 },
-  shareButtonText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },
+  shareButtonText: { color: NEUTRAL_COLORS.onAccent, fontWeight: '700', fontSize: 15 },
   shareNote: {
     fontSize: 11,
     color: NEUTRAL_COLORS.textSecondary,

@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
   },
-  ctaButtonText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
+  ctaButtonText: { color: NEUTRAL_COLORS.onAccent, fontWeight: '700', fontSize: 16 },
   comingSoonText: { fontSize: 12, color: NEUTRAL_COLORS.textSecondary, textAlign: 'center' },
   footnote: { fontSize: 11, color: NEUTRAL_COLORS.textSecondary, textAlign: 'center', marginTop: 12 },
 });

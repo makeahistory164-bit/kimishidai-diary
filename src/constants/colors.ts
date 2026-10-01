@@ -71,4 +71,8 @@ export const NEUTRAL_COLORS = {
   textPrimary: '#1C1C1E',
   textSecondary: '#6B6B70',
   accent: '#3A3A3C', // 回答ボタン等、スコアを示唆しない中立アクセント
+  /** accentやスコア色の上に載せる文字色。各所に'#FFFFFF'と手打ちされていたのを集約 */
+  onAccent: '#FFFFFF',
+  /** エラー表示。ここ以外で赤を使わないこと */
+  danger: '#C0392B',
 } as const;

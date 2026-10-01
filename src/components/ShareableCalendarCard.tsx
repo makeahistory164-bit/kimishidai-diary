@@ -70,7 +70,7 @@ export function ShareableCalendarCard({ year, month, entries }: Props) {
                   styles.cell,
                   {
                     backgroundColor: hasEntry ? getCalendarStageColor(cell.axisScore!) : 'transparent',
-                    color: hasEntry ? '#FFFFFF' : UNANSWERED_TEXT_COLOR,
+                    color: hasEntry ? NEUTRAL_COLORS.onAccent : UNANSWERED_TEXT_COLOR,
                   },
                 ]}
               >
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   legend: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
-  legendLabel: { fontSize: 9, color: NEUTRAL_COLORS.textSecondary },
+  legendLabel: { fontSize: 11, color: NEUTRAL_COLORS.textSecondary },
   legendBar: { flexDirection: 'row', flex: 1, gap: 2 },
   legendChip: { flex: 1, height: 6, borderRadius: 3 },
   footer: {

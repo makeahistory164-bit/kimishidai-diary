@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { NEUTRAL_COLORS } from '@/constants/colors';
+import { MIN_TAP, SPACING } from '@/constants/theme';
 import type { AnswerFeedback } from '@/types/models';
 
 interface Props {
@@ -19,6 +20,8 @@ export function FeedbackButtons({ feedback, onChange }: Props) {
       <Pressable
         onPress={() => toggle('up')}
         style={[styles.button, feedback === 'up' && styles.buttonActive]}
+        accessibilityRole="button"
+        accessibilityState={{ selected: feedback === 'up' }}
         accessibilityLabel="この質問は刺さった"
       >
         <Text style={styles.icon}>👍</Text>
@@ -26,6 +29,8 @@ export function FeedbackButtons({ feedback, onChange }: Props) {
       <Pressable
         onPress={() => toggle('down')}
         style={[styles.button, feedback === 'down' && styles.buttonActive]}
+        accessibilityRole="button"
+        accessibilityState={{ selected: feedback === 'down' }}
         accessibilityLabel="この質問は響かなかった"
       >
         <Text style={styles.icon}>👎</Text>
@@ -35,11 +40,12 @@ export function FeedbackButtons({ feedback, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 8 },
+  row: { flexDirection: 'row', gap: SPACING.sm },
   button: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    // 以前は36x36でHIGの最小タップ寸法を下回っていた
+    width: MIN_TAP,
+    height: MIN_TAP,
+    borderRadius: MIN_TAP / 2,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: NEUTRAL_COLORS.background,
@@ -50,5 +56,5 @@ const styles = StyleSheet.create({
     backgroundColor: NEUTRAL_COLORS.border,
     borderColor: NEUTRAL_COLORS.textSecondary,
   },
-  icon: { fontSize: 15 },
+  icon: { fontSize: 17 },
 });

@@ -20,7 +20,16 @@ export function GradientScoreBar({ score, truncateAtPercent, height = 16, showLa
   const visiblePercent = truncateAtPercent ?? 100;
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      accessibilityRole="progressbar"
+      // showLabel=false の呼び出し元（オンボーディング・ペイウォール）では
+      // スコアが視覚情報だけになるため、ここで必ず読めるようにする
+      accessibilityLabel="軸スコア"
+      accessibilityValue={
+        score === null ? { text: 'まだ回答がありません' } : { min: 0, max: 100, now: score }
+      }
+    >
       <View style={[styles.track, { height }]}>
         <View style={{ width: `${visiblePercent}%`, height: '100%', overflow: 'hidden' }}>
           <LinearGradient

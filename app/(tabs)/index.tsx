@@ -17,6 +17,7 @@ import { ProgressIndicator } from '@/components/ProgressIndicator';
 import { GradientScoreBar } from '@/components/GradientScoreBar';
 import { MascotSpeech } from '@/components/MascotSpeech';
 import { NEUTRAL_COLORS } from '@/constants/colors';
+import { TYPE, SPACING, RADIUS, MIN_TAP, SCREEN_PADDING } from '@/constants/theme';
 
 /**
  * 8.1 ホーム / 今日の質問画面。
@@ -43,7 +44,7 @@ export default function HomeScreen() {
   const dateLabel = `${today.getMonth() + 1}月${today.getDate()}日`;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.dateLabel}>{dateLabel}</Text>
 
@@ -68,7 +69,7 @@ export default function HomeScreen() {
               disabled={generating}
             >
               {generating ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color={NEUTRAL_COLORS.onAccent} />
               ) : (
                 <Text style={styles.primaryButtonText}>今日の質問を始める</Text>
               )}
@@ -154,26 +155,30 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: NEUTRAL_COLORS.background },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  scrollContent: { padding: 20, paddingBottom: 60, gap: 16 },
-  dateLabel: { fontSize: 13, color: NEUTRAL_COLORS.textSecondary },
-  centerBlock: { gap: 16, paddingVertical: 24 },
-  heading: { fontSize: 20, fontWeight: '700', color: NEUTRAL_COLORS.textPrimary },
-  body: { fontSize: 14, color: NEUTRAL_COLORS.textSecondary, lineHeight: 22 },
-  errorText: { fontSize: 13, color: '#C0392B' },
+  scrollContent: { padding: SCREEN_PADDING, paddingBottom: SPACING.xxl * 2, gap: SPACING.lg },
+  dateLabel: { ...TYPE.footnote, color: NEUTRAL_COLORS.textSecondary },
+  centerBlock: { gap: SPACING.lg, paddingVertical: SPACING.xl },
+  heading: { ...TYPE.title3, color: NEUTRAL_COLORS.textPrimary },
+  body: { ...TYPE.callout, color: NEUTRAL_COLORS.textSecondary },
+  errorText: { ...TYPE.footnote, color: NEUTRAL_COLORS.danger },
   primaryButton: {
+    minHeight: MIN_TAP,
     backgroundColor: NEUTRAL_COLORS.accent,
-    paddingVertical: 16,
-    borderRadius: 14,
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.control,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  primaryButtonText: { color: '#FFFFFF', fontWeight: '700', fontSize: 16 },
-  completedActions: { gap: 10, marginTop: 8 },
+  primaryButtonText: { ...TYPE.headline, color: NEUTRAL_COLORS.onAccent },
+  completedActions: { gap: SPACING.md, marginTop: SPACING.sm },
   secondaryButton: {
-    paddingVertical: 12,
-    borderRadius: 10,
+    minHeight: MIN_TAP,
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.control,
     borderWidth: 1,
     borderColor: NEUTRAL_COLORS.border,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  secondaryButtonText: { color: NEUTRAL_COLORS.textPrimary, fontWeight: '600' },
+  secondaryButtonText: { ...TYPE.headline, color: NEUTRAL_COLORS.textPrimary },
 });

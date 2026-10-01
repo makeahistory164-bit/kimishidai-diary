@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { NEUTRAL_COLORS } from '@/constants/colors';
+import { AXIS_GRADIENT_COLORS, NEUTRAL_COLORS } from '@/constants/colors';
 
 const ROWS: Array<{ label: string; free: string; premium: string }> = [
   { label: '毎日の質問・回答', free: '○', premium: '○' },
@@ -52,5 +52,6 @@ const styles = StyleSheet.create({
   },
   labelCell: { flex: 2, textAlign: 'left' },
   headerText: { fontWeight: '700', fontSize: 12, color: NEUTRAL_COLORS.textSecondary },
-  premiumText: { fontWeight: '700', color: '#1F7A45' },
+  // AXIS_GRADIENT_COLORSの最も濃い緑。以前は同じ値が手打ちで重複していた
+  premiumText: { fontWeight: '700', color: AXIS_GRADIENT_COLORS[AXIS_GRADIENT_COLORS.length - 1] },
 });

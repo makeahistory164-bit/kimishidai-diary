@@ -20,6 +20,11 @@ import { ScreenTimeInput } from '@/components/ScreenTimeInput';
 import { ReminderTimePicker } from '@/components/ReminderTimePicker';
 import { formatReminderTime, saveAndScheduleReminder } from '@/services/notifications/reminderService';
 import { toDateKey } from '@/lib/id';
+import { TYPE, SPACING, RADIUS, MIN_TAP, SCREEN_PADDING } from '@/constants/theme';
+import { Card } from '@/components/ui/Card';
+import { SectionHeader } from '@/components/ui/SectionHeader';
+import { ListRow } from '@/components/ui/ListRow';
+import { TextButton } from '@/components/ui/Button';
 
 /** 8.5 設定画面 */
 export default function SettingsScreen() {
@@ -95,11 +100,9 @@ export default function SettingsScreen() {
         : '未加入（無料プラン）';
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
-        <Text style={styles.screenTitle}>設定</Text>
-
-        <Section title="関心テーマ" icon="🎯">
+        <Section title="関心テーマ">
           <View style={styles.themeGrid}>
             {INTEREST_THEME_OPTIONS.map((theme) => {
               const active = preference.interestThemes.includes(theme);
@@ -108,6 +111,9 @@ export default function SettingsScreen() {
                   key={theme}
                   style={[styles.themeChip, active && styles.themeChipActive]}
                   onPress={() => toggleTheme(theme)}
+                  accessibilityRole="button"
+                  // 選択を背景色だけで表していたので、非視覚的にも伝わるようにする
+                  accessibilityState={{ selected: active }}
                 >
                   <Text style={[styles.themeChipText, active && styles.themeChipTextActive]}>
                     {theme}
@@ -118,11 +124,13 @@ export default function SettingsScreen() {
           </View>
         </Section>
 
-        <Section title="スクリーンタイム連携" icon="⏱️">
-          <Row
-            label={preference.screenTimeOptIn ? '連携済み（自己申告）' : '未連携'}
-            onPress={toggleScreenTimeOptIn}
-            trailing={preference.screenTimeOptIn ? 'オフにする' : 'オンにする'}
+        <Section title="スクリーンタイム連携">
+          <ListRow
+            kind="switch"
+            label="スクリーンタイムを記録する"
+            sublabel="自己申告。OSからの自動取得は行いません"
+            value={preference.screenTimeOptIn}
+            onValueChange={toggleScreenTimeOptIn}
           />
           {preference.screenTimeOptIn && (
             <View style={{ marginTop: 8 }}>
@@ -132,9 +140,10 @@ export default function SettingsScreen() {
               {showScreenTimeInput ? (
                 <ScreenTimeInput initialMinutes={todayMinutes} onSubmit={handleSubmitMinutes} />
               ) : (
-                <Pressable onPress={() => setShowScreenTimeInput(true)}>
-                  <Text style={styles.linkText}>今日の利用時間を入力/更新する</Text>
-                </Pressable>
+                <TextButton
+                  label="今日の利用時間を入力／更新する"
+                  onPress={() => setShowScreenTimeInput(true)}
+                />
               )}
             </View>
           )}
@@ -142,11 +151,11 @@ export default function SettingsScreen() {
 
         {/* 課金導線はストア決済を実装するまで出さない（releaseFlags.ts 参照） */}
         {PREMIUM_UI_ENABLED && (
-          <Section title="プレミアム" icon="✨">
-            <Row
+          <Section title="プレミアム">
+            <ListRow
+              kind="navigation"
               label={premiumLabel}
               onPress={() => router.push('/paywall')}
-              trailing={preference.premiumStatus === 'free' ? '詳しく見る' : '管理する'}
             />
           </Section>
         )}
@@ -154,15 +163,13 @@ export default function SettingsScreen() {
         {/* データ管理（エクスポート）はストア審査でプレースホルダと見なされないよう、
             機能が実装できるまでセクションごと出さない。要件書12.3ではPremium機能。 */}
 
-        <Section title="通知" icon="🔔">
-          <Row
-            label={
-              reminder.enabled
-                ? `毎日 ${formatReminderTime(reminder)} にお知らせ`
-                : 'ふりかえりのリマインダー'
-            }
-            onPress={() => applyReminder({ ...reminder, enabled: !reminder.enabled })}
-            trailing={reminder.enabled ? 'オフにする' : 'オンにする'}
+        <Section title="通知">
+          <ListRow
+            kind="switch"
+            label="ふりかえりのリマインダー"
+            sublabel={reminder.enabled ? `毎日 ${formatReminderTime(reminder)} にお知らせ` : undefined}
+            value={reminder.enabled}
+            onValueChange={(enabled) => applyReminder({ ...reminder, enabled })}
           />
           {reminder.enabled && (
             <ReminderTimePicker
@@ -176,19 +183,17 @@ export default function SettingsScreen() {
               <Text style={styles.helperText}>
                 端末側で通知がオフになっているため、お知らせできません。
               </Text>
-              <Pressable onPress={() => Linking.openSettings()}>
-                <Text style={styles.linkText}>端末の設定を開く</Text>
-              </Pressable>
+              <TextButton label="端末の設定を開く" onPress={() => Linking.openSettings()} />
             </View>
           )}
         </Section>
 
-        <Section title="法務・ポリシー" icon="📄">
-          <Row label="利用規約" onPress={() => router.push('/legal/terms')} trailing="開く" />
-          <Row
+        <Section title="法務・ポリシー">
+          <ListRow kind="navigation" label="利用規約" onPress={() => router.push('/legal/terms')} />
+          <ListRow
+            kind="navigation"
             label="プライバシーポリシー"
             onPress={() => router.push('/legal/privacy')}
-            trailing="開く"
           />
         </Section>
       </ScrollView>
@@ -196,77 +201,30 @@ export default function SettingsScreen() {
   );
 }
 
-function Section({
-  title,
-  icon,
-  children,
-}: {
-  title: string;
-  icon: string;
-  children: React.ReactNode;
-}) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>
-        {icon} {title}
-      </Text>
-      {children}
+    <View>
+      <SectionHeader title={title} />
+      <Card>{children}</Card>
     </View>
   );
 }
 
-function Row({
-  label,
-  trailing,
-  onPress,
-  disabled,
-}: {
-  label: string;
-  trailing: string;
-  onPress?: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <Pressable style={styles.row} onPress={onPress} disabled={disabled || !onPress}>
-      <Text style={[styles.rowLabel, disabled && styles.rowLabelDisabled]}>{label}</Text>
-      <Text style={[styles.rowTrailing, disabled && styles.rowLabelDisabled]}>{trailing}</Text>
-    </Pressable>
-  );
-}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: NEUTRAL_COLORS.background },
-  content: { padding: 20, paddingBottom: 60, gap: 20 },
-  screenTitle: { fontSize: 24, fontWeight: '700', color: NEUTRAL_COLORS.textPrimary },
-  section: {
-    backgroundColor: NEUTRAL_COLORS.surface,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: NEUTRAL_COLORS.border,
-    padding: 16,
-    gap: 10,
-  },
-  sectionTitle: { fontSize: 14, fontWeight: '700', color: NEUTRAL_COLORS.textPrimary },
-  themeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  content: { padding: SCREEN_PADDING, paddingBottom: SPACING.xxl * 2, gap: SPACING.xl },
+  themeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
   themeChip: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 999,
+    minHeight: MIN_TAP,
+    justifyContent: 'center',
+    paddingHorizontal: SPACING.lg,
+    borderRadius: RADIUS.pill,
     borderWidth: 1,
     borderColor: NEUTRAL_COLORS.border,
   },
   themeChipActive: { backgroundColor: NEUTRAL_COLORS.accent, borderColor: NEUTRAL_COLORS.accent },
-  themeChipText: { color: NEUTRAL_COLORS.textPrimary, fontSize: 13 },
-  themeChipTextActive: { color: '#FFFFFF' },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 6,
-  },
-  rowLabel: { fontSize: 14, color: NEUTRAL_COLORS.textPrimary },
-  rowLabelDisabled: { color: NEUTRAL_COLORS.textSecondary },
-  rowTrailing: { fontSize: 13, color: NEUTRAL_COLORS.accent, fontWeight: '600' },
-  helperText: { fontSize: 12, color: NEUTRAL_COLORS.textSecondary, marginBottom: 8 },
-  linkText: { fontSize: 13, color: NEUTRAL_COLORS.accent, fontWeight: '600' },
+  themeChipText: { ...TYPE.subhead, color: NEUTRAL_COLORS.textPrimary },
+  themeChipTextActive: { color: NEUTRAL_COLORS.onAccent },
+  helperText: { ...TYPE.footnote, color: NEUTRAL_COLORS.textSecondary },
 });

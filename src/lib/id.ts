@@ -17,6 +17,23 @@ export function toDateKey(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+const WEEKDAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
+
+/**
+ * YYYY-MM-DD を「2026年9月27日（日）」形式にする。
+ *
+ * DBのキーをそのまま画面に出すとISO形式が日本語UIの中に一つだけ現れてしまうため、
+ * 表示する箇所では必ずこれを通すこと。
+ *
+ * 【注意】new Date('2026-09-27') は日付のみの文字列をUTCとして解釈するので、
+ * 日本時間では前日になり曜日がずれる。必ず数値に分解してから組み立てる。
+ */
+export function formatDateLabel(dateKey: string): string {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  const weekday = WEEKDAY_LABELS[new Date(year, month - 1, day).getDay()];
+  return `${year}年${month}月${day}日（${weekday}）`;
+}
+
 export function nowIso(): string {
   return new Date().toISOString();
 }
