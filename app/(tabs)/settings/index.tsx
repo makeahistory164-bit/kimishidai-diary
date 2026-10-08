@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet, Linking } from 'react-na
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NEUTRAL_COLORS } from '@/constants/colors';
-import { PREMIUM_UI_ENABLED } from '@/constants/releaseFlags';
+import { PREMIUM_UI_ENABLED, SCREEN_TIME_UI_ENABLED } from '@/constants/releaseFlags';
 import {
   DEFAULT_REMINDER_SETTINGS,
   INTEREST_THEME_OPTIONS,
@@ -124,7 +124,9 @@ export default function SettingsScreen() {
           </View>
         </Section>
 
-        <Section title="スクリーンタイム連携">
+        {/* スクリーンタイム連携は初回リリースでは出さない（releaseFlags.ts 参照） */}
+        {SCREEN_TIME_UI_ENABLED && (
+          <Section title="スクリーンタイム連携">
           <ListRow
             kind="switch"
             label="スクリーンタイムを記録する"
@@ -146,8 +148,9 @@ export default function SettingsScreen() {
                 />
               )}
             </View>
-          )}
-        </Section>
+            )}
+          </Section>
+        )}
 
         {/* 課金導線はストア決済を実装するまで出さない（releaseFlags.ts 参照） */}
         {PREMIUM_UI_ENABLED && (
