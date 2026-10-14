@@ -5,7 +5,7 @@ set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-SLIDES=6
+SLIDES=7
 
 # headless Chrome はまれに書き出し後も終了しないので、30秒で打ち切って最大3回やり直す
 shoot() { # $1=出力PNG $2=URL $3=幅,高さ
@@ -39,3 +39,4 @@ render() { # $1=出力フォルダ名 $2=幅 $3=高さ
 
 render 6.9 1320 2868
 render 6.5 1284 2778
+render 6.3 1206 2622
