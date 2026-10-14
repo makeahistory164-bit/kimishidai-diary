@@ -57,7 +57,8 @@
 
   /* 1枚目（ヒーロー） */
   .hero h1 { font-size: 156px; }
-  .hero .copy { z-index: 2; }
+  .hero .copy { z-index: 2; top: 150px; }
+  .mascot { display: block; width: 250px; height: auto; margin: 0 auto 40px; filter: drop-shadow(0 16px 24px rgba(31, 90, 62, 0.22)); }
   .badges { display: flex; justify-content: center; gap: 28px; margin-top: 64px; }
   .badge {
     width: 300px; height: 300px; border-radius: 50%; background: #fff;
@@ -89,6 +90,13 @@
 <script>
   const STRIPE = ['#D9482F', '#EF8460', '#D8D8DE', '#7CBE8C', '#1F7A45']
     .map(c => `<i style="background:${c}"></i>`).join('');
+  // アプリアイコンのキャラクター（icon.png のドット絵を背景なしで描き直したもの）
+  const MASCOT = `<svg class="mascot" viewBox="66 56 268 286" fill="#2E6E4E">
+    <path fill-rule="evenodd" d="M88 56h204v162H88z M128 118v40h42v-40z M210 118v40h42v-40z M148 180v20h84v-20z"/>
+    <rect x="170" y="218" width="40" height="24"/>
+    <rect x="66" y="240" width="268" height="102"/>
+    <rect x="312" y="180" width="22" height="62"/>
+  </svg>`;
   const shot = name => `../screenshots/6.9/${name}.png`;
   const phone = (name, cls = '', top = 1180) =>
     `<div class="phone ${cls}" style="top:${top}px"><img src="${shot(name)}"></div>`;
@@ -98,8 +106,9 @@
       cls: 'hero pair',
       html: `
         <div class="copy">
+          ${MASCOT}
           <div class="eyebrow">1日5問、選ぶだけの振り返り日記</div>
-          <h1>今日は<br><em>自分軸</em>で<br>過ごせた？</h1>
+          <h1>今日は<em>自分軸</em>で<br>過ごせた？</h1>
           <div class="badges">
             <div class="badge"><small>1日</small><b>3分</b><small>選ぶだけ</small></div>
             <div class="badge"><small>アカウント<br>登録</small><b>不要</b></div>
