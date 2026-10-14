@@ -1,0 +1,110 @@
+Thank you for reviewing our app. Below are the answers to each question.
+
+--------------------------------------------------
+2. PURPOSE OF THE APP AND TARGET USERS
+--------------------------------------------------
+"Kimishidai Diary" is a personal reflection journal for Japanese-speaking adults.
+
+Problem it solves:
+Many people spend their days accommodating others and gradually lose track of
+what they themselves wanted. Traditional free-form journals require too much
+effort to sustain, so the habit dies within days.
+
+What the app does:
+Each day the app presents 5 questions drawn from a fixed pool of 112 questions
+across 10 themes (work, relationships, money, health, family, romance, career,
+use of time, promises to oneself, emotions). The user answers each on a 4-point
+scale and may optionally add a one-line memo. A reflection takes about 3 minutes.
+
+From the answers the app computes an "axis score" (0-100) representing how much
+the day was lived according to the user's own values. Each day on the calendar is
+filled with a color derived from that score, so a month of self-consistency is
+visible at a glance without re-reading any text.
+
+Target users: adults who feel they constantly defer to others and want a
+lightweight daily reflection habit that they can actually sustain.
+
+--------------------------------------------------
+3. HOW TO SET UP AND ACCESS THE MAIN FEATURES
+--------------------------------------------------
+No account, no login, no demo credentials and no sample files are required.
+Every feature is available immediately after installation, fully offline.
+
+- On first launch, a 3-step onboarding appears. You may tap "スキップ" (Skip)
+  at any time. Selecting interest themes is optional.
+
+- Tab 1 "質問" (Questions): tap "今日の質問を始める" (Start today's questions).
+  Five questions appear. For each, choose one of four options
+  ("そう思わない" / "あまり思わない" / "やや思う" / "そう思う").
+  The text field below each question is an optional memo.
+  After answering all five, the axis score for the day is displayed.
+
+- Tab 2 "やること" (To-dos): type a task in the field and tap "追加" (Add).
+  Tap the circle on the left to mark it done; a sheet then asks who the task was
+  for (yourself / family / work / others). A breakdown is shown at the bottom.
+
+- Tab 3 "カレンダー" (Calendar): every answered day is colored by its score.
+  Tap any colored day to see that day's questions and answers.
+  "この月を画像で共有する" exports an image containing only the colors and the
+  number of recorded days. It never includes answers or memo text.
+
+- Tab 4 "設定" (Settings): choose interest themes, enable a daily local reminder
+  notification, and open the Terms of Use and Privacy Policy.
+
+Please note: the calendar fills in as the user records days over time. On a fresh
+installation the calendar is empty, which is the expected initial state.
+
+--------------------------------------------------
+4. EXTERNAL SERVICES, TOOLS OR PLATFORMS
+--------------------------------------------------
+None. The app makes no network requests whatsoever and functions entirely offline.
+
+Specifically, the app does NOT use:
+- any data provider or backend server of our own
+- any authentication service (there are no accounts)
+- any payment processor (there are no purchases of any kind)
+- any AI or LLM service
+- any analytics, attribution, advertising or crash-reporting SDK
+
+All data (answers, memos, to-dos, settings) is stored in an SQLite database on
+the device and never leaves it. Notifications are local notifications scheduled
+on the device; the app does not use push notifications and never requests or
+transmits a push token.
+
+--------------------------------------------------
+5. REGIONAL DIFFERENCES
+--------------------------------------------------
+There are none. The app behaves identically in every region.
+The user interface is Japanese only. There is no server, no region-dependent
+content, and no feature that is gated or altered by territory.
+
+--------------------------------------------------
+6. REGULATED INDUSTRIES AND THIRD-PARTY MATERIAL
+--------------------------------------------------
+Not applicable.
+
+The app does not operate in a regulated industry. It is not a medical,
+mental-health treatment, financial, or gambling application. Section 1 of our
+Terms of Use states explicitly that the app does not provide medical,
+psychotherapeutic, diagnostic, treatment, legal or financial advice, and directs
+users with health concerns to consult appropriate professionals.
+
+All content is original work created by the developer: the 112 questions, all
+interface text, the mascot artwork and the app icon. No third-party content,
+trademarks or licensed material are included.
+
+--------------------------------------------------
+ADDITIONAL NOTES
+--------------------------------------------------
+- There is no account registration, sign-in or account deletion flow, because the
+  app requires no account at all.
+- There is no user-generated content shared between users. Memos and to-dos are
+  private to the device and are never uploaded or visible to anyone else.
+  Therefore no content reporting or blocking mechanism is applicable.
+- There is no paid content, subscription or in-app purchase. All functionality is
+  free.
+
+Terms of Use:
+https://makeahistory164-bit.github.io/kimishidai-diary-legal/terms.html
+Privacy Policy:
+https://makeahistory164-bit.github.io/kimishidai-diary-legal/privacy.html
