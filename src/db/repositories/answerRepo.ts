@@ -1,6 +1,6 @@
 import { db } from '../client';
 import { generateId, nowIso } from '@/lib/id';
-import type { Answer, AnswerFeedback } from '@/types/models';
+import type { Answer, AnswerFeedback, QuestionPolarity } from '@/types/models';
 
 interface AnswerRow {
   id: string;
@@ -114,4 +114,22 @@ export async function listRecentAnswersWithCategory(
     limit
   );
   return rows.map((row) => ({ ...toModel(row), category: row.category }));
+}
+
+/** 月次レポート用: 期間内（両端含む）の回答を、日付・カテゴリ・polarity付きで取得 */
+export async function listScoredAnswersInRange(
+  startDate: string,
+  endDate: string
+): Promise<Array<{ date: string; category: string; polarity: QuestionPolarity; value: number }>> {
+  return db.getAllAsync(
+    `SELECT daily_entry.date AS date, question.category AS category,
+            question.polarity AS polarity, answer.value AS value
+     FROM answer
+     JOIN question ON question.id = answer.question_id
+     JOIN daily_entry ON daily_entry.id = question.daily_entry_id
+     WHERE daily_entry.date >= ? AND daily_entry.date <= ?
+     ORDER BY daily_entry.date ASC`,
+    startDate,
+    endDate
+  );
 }

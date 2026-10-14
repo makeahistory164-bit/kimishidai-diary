@@ -20,7 +20,8 @@
       "autoIncrement": true,
       "ios": {
         "resourceClass": "m-medium"
-      }
+      },
+      "environment": "production"
     }
   },
   "submit": {

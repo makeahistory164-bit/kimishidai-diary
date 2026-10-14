@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { listDailyEntriesInRange } from '@/db/repositories/dailyEntryRepo';
-import { getUserPreference } from '@/db/repositories/userPreferenceRepo';
-import { PREMIUM_UI_ENABLED } from '@/constants/releaseFlags';
+import { isPaywallEnabled } from '@/services/purchases';
+import { usePremium } from '@/hooks/usePremium';
 import type { DailyEntry } from '@/types/models';
 
 const FREE_RANGE_MONTHS = 3; // 12.2: 無料範囲は直近3ヶ月
@@ -25,11 +25,7 @@ export function useCalendarMonth() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [entries, setEntries] = useState<DailyEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isPremium, setIsPremium] = useState(false);
-
-  useEffect(() => {
-    getUserPreference().then((pref) => setIsPremium(pref.premiumStatus !== 'free'));
-  }, []);
+  const isPremium = usePremium();
 
   const load = useCallback(async (y: number, m: number) => {
     setLoading(true);
@@ -62,8 +58,8 @@ export function useCalendarMonth() {
     const prevIndex = monthIndex(year, month) - 1;
     const prevYear = Math.floor(prevIndex / 12);
     const prevMonth = (prevIndex % 12) + 1;
-    // 課金導線を出さないリリースでは無料範囲の制限自体を適用しない（releaseFlags.ts 参照）
-    if (PREMIUM_UI_ENABLED && !isPremium && !isWithinFreeRange(prevYear, prevMonth)) {
+    // 購入手段がない環境では無料範囲の制限自体を適用しない（services/purchases 参照）
+    if (isPaywallEnabled() && !isPremium && !isWithinFreeRange(prevYear, prevMonth)) {
       return 'blocked';
     }
     setYear(prevYear);

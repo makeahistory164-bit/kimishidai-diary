@@ -7,7 +7,8 @@ import { useShareCalendar } from '@/hooks/useShareCalendar';
 import { CalendarGrid } from '@/components/CalendarGrid';
 import { ShareableCalendarCard } from '@/components/ShareableCalendarCard';
 import { NEUTRAL_COLORS, AXIS_GRADIENT_COLORS } from '@/constants/colors';
-import { PREMIUM_UI_ENABLED } from '@/constants/releaseFlags';
+import { isPaywallEnabled } from '@/services/purchases';
+import { Button } from '@/components/ui/Button';
 
 /** 8.2 カレンダー画面 */
 export default function CalendarScreen() {
@@ -24,6 +25,18 @@ export default function CalendarScreen() {
   };
   const handleNext = () => {
     goToNextMonth();
+  };
+  // 月次レポートはプレミアム機能。購入手段がない環境では制限しない（services/purchases 参照）
+  const reportLocked = isPaywallEnabled() && !isPremium;
+  const handleOpenReport = () => {
+    if (reportLocked) {
+      router.push('/paywall');
+      return;
+    }
+    router.push({
+      pathname: '/report/[month]',
+      params: { month: `${year}-${String(month).padStart(2, '0')}` },
+    });
   };
 
   return (
@@ -51,7 +64,7 @@ export default function CalendarScreen() {
           </Pressable>
         </View>
 
-        {PREMIUM_UI_ENABLED && !isPremium && (
+        {isPaywallEnabled() && !isPremium && (
           <Text style={styles.freeRangeNote}>無料プランでは直近3ヶ月分を閲覧できます</Text>
         )}
 
@@ -75,6 +88,14 @@ export default function CalendarScreen() {
           </View>
           <Text style={styles.legendLabel}>自分軸を保てた日</Text>
         </View>
+
+        {/* 記録が1日もない月はレポートも共有も中身がないので出さない */}
+        {!loading && recordedDays > 0 && (
+          <View style={styles.reportBlock}>
+            <Button label="この月のレポートを見る" variant="secondary" onPress={handleOpenReport} />
+            {reportLocked && <Text style={styles.reportNote}>「プラス」の機能です</Text>}
+          </View>
+        )}
 
         {/* 記録が1日もない月は共有しても意味がないので出さない */}
         {!loading && recordedDays > 0 && (
@@ -141,6 +162,8 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     marginTop: -6,
   },
+  reportBlock: { marginTop: 16, gap: 6 },
+  reportNote: { fontSize: 11, color: NEUTRAL_COLORS.textSecondary, textAlign: 'center' },
   // キャプチャ用カードを画面外へ逃がす（レンダリングはされるが見えない）
   offscreen: { position: 'absolute', left: -9999, top: 0 },
 });

@@ -101,3 +101,13 @@ export async function listRecentTodos(
   );
   return rows.map(toModel);
 }
+
+/** 月次レポート用: 期間内（両端含む）のTODOを取得 */
+export async function listTodosInRange(startDate: string, endDate: string): Promise<Todo[]> {
+  const rows = await db.getAllAsync<TodoRow>(
+    `SELECT * FROM todo WHERE date >= ? AND date <= ? ORDER BY date ASC, display_order ASC`,
+    startDate,
+    endDate
+  );
+  return rows.map(toModel);
+}

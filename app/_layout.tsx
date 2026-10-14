@@ -9,9 +9,13 @@ import {
   configureNotificationHandler,
   syncReminderOnLaunch,
 } from '@/services/notifications/reminderService';
+import { configurePurchases, syncPremiumStatus } from '@/services/purchases';
 
 // 通知の表示方法はアプリ起動時に一度だけ設定する（コンポーネント外＝再レンダーの影響を受けない）
 configureNotificationHandler();
+// 課金SDKも同様。各画面の初回描画で isPaywallEnabled() を正しく返すため、
+// useEffect（子の描画後に走る）ではなくここで構成する。
+configurePurchases();
 
 /** モーダル画面の閉じるボタン。モーダルには戻るボタンが出ないため自前で用意する。 */
 function HeaderCloseButton() {
@@ -36,6 +40,8 @@ export default function RootLayout() {
   useEffect(() => {
     if (dbReady) {
       syncReminderOnLaunch();
+      // 課金状態のキャッシュ（premium_status）をDBへ書くため、DB初期化後に行う
+      syncPremiumStatus();
     }
   }, [dbReady]);
 
@@ -62,12 +68,13 @@ export default function RootLayout() {
         <Stack.Screen name="onboarding/index" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="day/[date]" options={{ headerShown: true, title: '日別詳細' }} />
+        <Stack.Screen name="report/[month]" options={{ headerShown: true, title: '月次レポート' }} />
         <Stack.Screen
           name="paywall"
           options={{
             presentation: 'modal',
             headerShown: true,
-            title: 'プレミアム',
+            title: 'プラス',
             // モーダルは戻るボタンが出ないため、明示的な閉じる手段が必要
             headerLeft: () => <HeaderCloseButton />,
           }}

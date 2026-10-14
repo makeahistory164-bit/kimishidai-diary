@@ -1,17 +1,98 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { PurchasesPackage } from 'react-native-purchases';
 import { GradientScoreBar } from '@/components/GradientScoreBar';
 import { PaywallCompareTable } from '@/components/PaywallCompareTable';
+import { Button, TextButton } from '@/components/ui/Button';
 import { NEUTRAL_COLORS } from '@/constants/colors';
+import { usePremium } from '@/hooks/usePremium';
+import { getLifetimePackage, purchasePremium, restorePremium } from '@/services/purchases';
+
+type LoadState = 'loading' | 'ready' | 'unavailable';
 
 /**
- * 8.6 アップグレード（ペイウォール）画面。
- * ストア決済基盤は12.6で未確定のオープンクエスチョンのため、
- * 本MVPでは購入ボタンを「準備中」スタブとしている（実際の課金処理は行わない）。
+ * 8.6 アップグレード（ペイウォール）画面。買い切り（非消耗型IAP）を1つ売る。
+ *
+ * 価格は文言に書かず、ストアから取得した priceString を表示する。
+ * App Store Connect で価格を変えてもアプリの更新が要らず、国ごとの価格にも追従する。
+ * 「購入を復元」は Guideline 3.1.1 で非消耗型に必須。
  */
 export default function PaywallScreen() {
-  const [showComingSoon, setShowComingSoon] = useState(false);
+  const isPremium = usePremium();
+  const [pkg, setPkg] = useState<PurchasesPackage | null>(null);
+  const [loadState, setLoadState] = useState<LoadState>('loading');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    getLifetimePackage()
+      .then((found) => {
+        if (!active) return;
+        setPkg(found);
+        setLoadState(found ? 'ready' : 'unavailable');
+      })
+      .catch(() => {
+        if (active) setLoadState('unavailable');
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handlePurchase = async () => {
+    if (!pkg) return;
+    setBusy(true);
+    try {
+      if ((await purchasePremium(pkg)) === 'purchased') {
+        Alert.alert('ありがとうございます', 'すべての期間の記録と、月次レポートを使えるようになりました。', [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
+      }
+    } catch {
+      Alert.alert(
+        '購入を完了できませんでした',
+        '通信状況を確認して、もう一度お試しください。料金が請求された場合は「購入を復元」で反映できます。'
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (busy) return; // TextButton には disabled が無いため、購入処理中の二重実行をここで防ぐ
+    setBusy(true);
+    try {
+      if (await restorePremium()) {
+        Alert.alert('購入を復元しました', 'すべての期間の記録と、月次レポートを使えるようになりました。', [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
+      } else {
+        Alert.alert(
+          '復元できる購入が見つかりませんでした',
+          '購入時と同じ Apple アカウントでサインインしているか確認してください。'
+        );
+      }
+    } catch {
+      Alert.alert('復元できませんでした', '通信状況を確認して、もう一度お試しください。');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (isPremium) {
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <View style={styles.content}>
+          <Text style={styles.title}>購入済みです</Text>
+          <Text style={styles.body}>
+            ご購入ありがとうございます。これまでの記録を期間の制限なくすべて見返せるほか、カレンダーから月次レポートを開けます。
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -28,19 +109,33 @@ export default function PaywallScreen() {
 
         <PaywallCompareTable />
 
-        <View style={styles.priceBlock}>
-          <Text style={styles.price}>月額 500円（税込・目安）</Text>
-          <Text style={styles.priceNote}>いつでも解約できます</Text>
-        </View>
+        {loadState === 'loading' && (
+          <ActivityIndicator color={NEUTRAL_COLORS.accent} style={{ marginVertical: 16 }} />
+        )}
 
-        <Pressable style={styles.ctaButton} onPress={() => setShowComingSoon(true)}>
-          <Text style={styles.ctaButtonText}>プレミアムに加入する</Text>
-        </Pressable>
-        {showComingSoon && (
-          <Text style={styles.comingSoonText}>
-            ストア決済は準備中です。もうしばらくお待ちください。
+        {loadState === 'ready' && pkg && (
+          <>
+            <View style={styles.priceBlock}>
+              <Text style={styles.price}>{pkg.product.priceString}</Text>
+              <Text style={styles.priceNote}>買い切り・一度のお支払いで、ずっと使えます</Text>
+            </View>
+            <Button
+              label={busy ? '処理中…' : '購入する'}
+              onPress={handlePurchase}
+              disabled={busy}
+            />
+          </>
+        )}
+
+        {loadState === 'unavailable' && (
+          <Text style={styles.unavailableText}>
+            購入情報を読み込めませんでした。通信状況を確認して、時間をおいて開き直してください。
           </Text>
         )}
+
+        <View style={styles.restoreRow}>
+          <TextButton label="購入を復元" onPress={handleRestore} />
+        </View>
 
         <Text style={styles.footnote}>
           「毎日の質問 → 回答 → カレンダーで振り返る」というコア機能は、これからもずっと無料です。
@@ -59,13 +154,12 @@ const styles = StyleSheet.create({
   priceBlock: { alignItems: 'center', gap: 4, marginTop: 4 },
   price: { fontSize: 20, fontWeight: '700', color: NEUTRAL_COLORS.textPrimary },
   priceNote: { fontSize: 12, color: NEUTRAL_COLORS.textSecondary },
-  ctaButton: {
-    backgroundColor: NEUTRAL_COLORS.accent,
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: 'center',
+  unavailableText: {
+    fontSize: 13,
+    color: NEUTRAL_COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
   },
-  ctaButtonText: { color: NEUTRAL_COLORS.onAccent, fontWeight: '700', fontSize: 16 },
-  comingSoonText: { fontSize: 12, color: NEUTRAL_COLORS.textSecondary, textAlign: 'center' },
+  restoreRow: { alignItems: 'center' },
   footnote: { fontSize: 11, color: NEUTRAL_COLORS.textSecondary, textAlign: 'center', marginTop: 12 },
 });

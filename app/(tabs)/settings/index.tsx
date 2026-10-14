@@ -3,7 +3,9 @@ import { View, Text, Pressable, ScrollView, StyleSheet, Linking } from 'react-na
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NEUTRAL_COLORS } from '@/constants/colors';
-import { PREMIUM_UI_ENABLED, SCREEN_TIME_UI_ENABLED } from '@/constants/releaseFlags';
+import { SCREEN_TIME_UI_ENABLED } from '@/constants/releaseFlags';
+import { isPaywallEnabled } from '@/services/purchases';
+import { usePremium } from '@/hooks/usePremium';
 import {
   DEFAULT_REMINDER_SETTINGS,
   INTEREST_THEME_OPTIONS,
@@ -29,6 +31,7 @@ import { TextButton } from '@/components/ui/Button';
 /** 8.5 設定画面 */
 export default function SettingsScreen() {
   const { preference, refresh } = useUserPreference();
+  const isPremium = usePremium();
   const [todayMinutes, setTodayMinutes] = useState<number | null>(null);
   const [showScreenTimeInput, setShowScreenTimeInput] = useState(false);
   const [reminder, setReminder] = useState<ReminderSettings>(DEFAULT_REMINDER_SETTINGS);
@@ -92,12 +95,7 @@ export default function SettingsScreen() {
     setShowScreenTimeInput(false);
   };
 
-  const premiumLabel =
-    preference.premiumStatus === 'premium_active'
-      ? 'プレミアム加入中'
-      : preference.premiumStatus === 'premium_trial'
-        ? 'トライアル中'
-        : '未加入（無料プラン）';
+  const premiumLabel = isPremium ? '購入済み' : '未購入（無料プラン）';
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -152,9 +150,9 @@ export default function SettingsScreen() {
           </Section>
         )}
 
-        {/* 課金導線はストア決済を実装するまで出さない（releaseFlags.ts 参照） */}
-        {PREMIUM_UI_ENABLED && (
-          <Section title="プレミアム">
+        {/* 購入手段がない環境では課金導線を出さない（services/purchases 参照） */}
+        {isPaywallEnabled() && (
+          <Section title="プラス">
             <ListRow
               kind="navigation"
               label={premiumLabel}

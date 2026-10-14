@@ -1,6 +1,6 @@
 # キミシダイ日記 — 引き継ぎドキュメント
 
-最終更新: 2026-08-28
+最終更新: 2026-10-10
 
 新しいセッション/別の開発者が続きから作業するための資料。
 **まずこのファイルを最後まで読んでから着手すること。**「なぜそうしたか」が書いてあり、
@@ -156,7 +156,8 @@ app/                          Expo Router（画面）
   (tabs)/calendar/index.tsx   カレンダー＋共有
   (tabs)/settings/index.tsx   設定
   day/[date].tsx              日別詳細
-  paywall.tsx                 ペイウォール（購入は「準備中」スタブ）
+  paywall.tsx                 ペイウォール（買い切りIAP・購入を復元）
+  report/[month].tsx          月次レポート（プレミアム）
 
 src/
   db/schema.ts                スキーマ・マイグレーション（現在 v2）
@@ -171,6 +172,8 @@ src/
     screenTime/               自己申告プロバイダ
     notifications/
       reminderService.ts      ★毎日のリマインダー（ローカル通知）
+    purchases/index.ts        ★RevenueCat窓口（買い切り・Entitlement `premium`）
+    report/monthlyReport.ts   ★月次レポートの集計（端末内のみ・AI不使用）
   constants/
     fallbackQuestions.ts      ★112問の質問プール＋選出ロジック
     colors.ts                 暖色→緑の配色
@@ -197,7 +200,11 @@ src/
 - 日別詳細（当日のみ編集可、過去日は閲覧のみ）
 - カレンダーの画像共有
 - **毎日のリマインダー通知**（設定画面で時刻を指定。ローカル通知のみでコスト0円）
-- オンボーディング3ステップ / 設定 / ペイウォールUI
+- オンボーディング3ステップ / 設定
+- **買い切りIAP（RevenueCat）**: 購入・復元・購入状態の端末キャッシュ。キー未設定のビルドや
+  Android/Webでは課金導線ごと出さない（`isPaywallEnabled()`）
+- **月次レポート（プレミアム）**: 毎日の軸の推移・テーマ別の傾向（先月比）・「誰のため」の内訳。
+  月の平均スコアは数字で出さない（3-5と同じ理由）。年次レポートはユーザーが増えてから作る
 - 利用規約 / プライバシーポリシーのアプリ内表示（MVP版）
 - **ユーザーに見える文言からAI言及を全削除済み**
 
@@ -302,7 +309,9 @@ watchmanが未インストールのため、Fast Refreshが効かない場合が
 4. ストア用スクリーンショット（6.9インチ必須）
 5. App Privacy 申告 — 端末内保存のみ・外部送信なしのため「データを収集しません」
 6. `eas build --platform ios --profile production` → 申請
-7. （将来）ペイウォールのIAP実装 → `PREMIUM_UI_ENABLED` を true に戻す
+7. ~~ペイウォールのIAP実装~~ **完了（コード側）**。残り: RevenueCatでEntitlement `premium` と
+   Lifetimeパッケージを設定、`EXPO_PUBLIC_REVENUECAT_IOS_API_KEY` を `eas env:create` で登録、
+   App Privacy申告を「購入履歴を収集」に変更、法務ページを再生成してpush
 8. （将来）AI導入 ＋ サーバー中継 ＋ 3重の安全装置
 
 ### 集客について（検討済みの方針）
