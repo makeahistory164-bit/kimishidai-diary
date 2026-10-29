@@ -13,7 +13,7 @@ export interface LegalDocument {
 
 export const TERMS_DOCUMENT: LegalDocument = {
   title: '利用規約',
-  lastUpdated: '2026年10月10日',
+  lastUpdated: '2026年10月29日',
   intro:
     'この利用規約は、キミシダイ日記を安心して使っていただくための基本的な約束ごとをまとめたものです。',
   sections: [
@@ -103,7 +103,7 @@ export const TERMS_DOCUMENT: LegalDocument = {
 
 export const PRIVACY_POLICY_DOCUMENT: LegalDocument = {
   title: 'プライバシーポリシー',
-  lastUpdated: '2026年10月10日',
+  lastUpdated: '2026年10月29日',
   intro:
     'このプライバシーポリシーは、キミシダイ日記で扱うデータと、その使い方を説明するものです。',
   sections: [

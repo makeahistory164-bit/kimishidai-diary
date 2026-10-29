@@ -89,11 +89,11 @@ export function daysInMonth(year: number, month: number): number {
   return new Date(year, month, 0).getDate();
 }
 
-function monthRange(year: number, month: number): [string, string] {
+export function monthRange(year: number, month: number): [string, string] {
   return [`${year}-${pad(month)}-01`, `${year}-${pad(month)}-${pad(daysInMonth(year, month))}`];
 }
 
-function previousMonth(year: number, month: number): [number, number] {
+export function previousMonth(year: number, month: number): [number, number] {
   return month === 1 ? [year - 1, 12] : [year, month - 1];
 }
 

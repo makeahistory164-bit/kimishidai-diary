@@ -12,6 +12,13 @@ import { getLifetimePackage, purchasePremium, restorePremium } from '@/services/
 
 type LoadState = 'loading' | 'ready' | 'unavailable';
 
+/** RevenueCat 以外の理由で読み込めなかったときのコード */
+const UNAVAILABLE_CODE = {
+  /** 購入手段なし、または Current Offering に販売中のパッケージが無い */
+  noPackage: 'NO-PACKAGE',
+  unknown: 'UNKNOWN',
+} as const;
+
 /**
  * 8.6 アップグレード（ペイウォール）画面。買い切り（非消耗型IAP）を1つ売る。
  *
@@ -24,6 +31,8 @@ export default function PaywallScreen() {
   const [pkg, setPkg] = useState<PurchasesPackage | null>(null);
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [busy, setBusy] = useState(false);
+  // 読み込めなかった理由。問い合わせやストア設定の不備を切り分けるために画面にも小さく出す
+  const [loadErrorCode, setLoadErrorCode] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -32,9 +41,15 @@ export default function PaywallScreen() {
         if (!active) return;
         setPkg(found);
         setLoadState(found ? 'ready' : 'unavailable');
+        // Offering は取れたが販売中のパッケージが無い＝RevenueCat側の設定漏れ
+        if (!found) setLoadErrorCode(UNAVAILABLE_CODE.noPackage);
       })
-      .catch(() => {
-        if (active) setLoadState('unavailable');
+      .catch((e: unknown) => {
+        if (!active) return;
+        setLoadState('unavailable');
+        // RevenueCat のエラーは code を持つ（例: "23" はストアから商品を取得できない設定エラー）
+        const code = (e as { code?: unknown } | null)?.code;
+        setLoadErrorCode(typeof code === 'string' ? `RC-${code}` : UNAVAILABLE_CODE.unknown);
       });
     return () => {
       active = false;
@@ -130,6 +145,7 @@ export default function PaywallScreen() {
         {loadState === 'unavailable' && (
           <Text style={styles.unavailableText}>
             購入情報を読み込めませんでした。通信状況を確認して、時間をおいて開き直してください。
+            {loadErrorCode && `\n（エラーコード: ${loadErrorCode}）`}
           </Text>
         )}
 

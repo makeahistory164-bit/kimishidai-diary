@@ -16,6 +16,7 @@ import { QuestionCard } from '@/components/QuestionCard';
 import { ProgressIndicator } from '@/components/ProgressIndicator';
 import { GradientScoreBar } from '@/components/GradientScoreBar';
 import { MascotSpeech } from '@/components/MascotSpeech';
+import { MonthlyReportBanner } from '@/components/MonthlyReportBanner';
 import { NEUTRAL_COLORS } from '@/constants/colors';
 import { TYPE, SPACING, RADIUS, MIN_TAP, SCREEN_PADDING } from '@/constants/theme';
 
@@ -114,6 +115,12 @@ export default function HomeScreen() {
                 「あとで」を押しても off として保存されるので二度は出ない。 */}
             {preference?.notificationSettings == null && (
               <ReminderPrompt onDone={refreshPreference} />
+            )}
+
+            {/* 月初に1回だけの、先月のレポートの案内。リマインダーの質問と同時には出さない
+                （一度に2つ頼みごとをされる画面にしないため）。表示条件は reportBanner.ts */}
+            {preference != null && preference.notificationSettings != null && (
+              <MonthlyReportBanner />
             )}
 
             <View style={styles.completedActions}>
