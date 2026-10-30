@@ -1,0 +1,25 @@
+Product: Plus Lifetime (kimishidai_plus_lifetime)
+Type: Non-consumable, one-time purchase. Not a subscription.
+
+What it unlocks:
+- Calendar history older than the most recent 3 months
+- The monthly report (a summary of the user's records for each month)
+Daily questions, answers, to-dos and the most recent 3 months of the calendar stay free.
+The monthly report is calculated on the device. No AI is used.
+
+How to reach the purchase screen:
+No account or login is required.
+1. Tab 4 "設定" (Settings) > section "プラス" (Plus) > row "未購入（無料プラン）" (Not purchased).
+Other entry points:
+2. Tab 3 "カレンダー" (Calendar): tap the left arrow until you pass the free 3-month range.
+3. Tab 1 "質問" (Questions): answer today's 5 questions, then open Tab 3 and tap "この月のレポートを見る" (View this month's report).
+
+How to confirm the purchase:
+1. On the purchase screen, tap "購入する" (Purchase) and complete the sandbox purchase.
+2. The screen changes to "購入済みです" (Purchased), and the Settings row shows "購入済み" (Purchased).
+3. In Tab 3, "この月のレポートを見る" now opens the report.
+
+Restore: tap "購入を復元" (Restore Purchase) on the purchase screen.
+
+The price shown comes from the App Store and may appear in the currency of the reviewer's storefront.
+Purchases are handled by Apple through the RevenueCat SDK.

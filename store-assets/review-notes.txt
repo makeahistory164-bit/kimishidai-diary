@@ -28,7 +28,8 @@ lightweight daily reflection habit that they can actually sustain.
 3. HOW TO SET UP AND ACCESS THE MAIN FEATURES
 --------------------------------------------------
 No account, no login, no demo credentials and no sample files are required.
-Every feature is available immediately after installation, fully offline.
+All free features are available immediately after installation and work offline.
+The in-app purchase requires a network connection.
 
 - On first launch, a 3-step onboarding appears. You may tap "スキップ" (Skip)
   at any time. Selecting interest themes is optional.
@@ -47,9 +48,16 @@ Every feature is available immediately after installation, fully offline.
   Tap any colored day to see that day's questions and answers.
   "この月を画像で共有する" exports an image containing only the colors and the
   number of recorded days. It never includes answers or memo text.
+  "この月のレポートを見る" (View this month's report) appears once the displayed
+  month has a record. The monthly report requires the "プラス" (Plus) purchase.
 
 - Tab 4 "設定" (Settings): choose interest themes, enable a daily local reminder
-  notification, and open the Terms of Use and Privacy Policy.
+  notification, open the "プラス" (Plus) purchase screen, and open the Terms of Use
+  and Privacy Policy.
+
+- In-app purchase: "プラス" (Plus) is a one-time, non-consumable purchase. It unlocks
+  calendar history older than the most recent 3 months and the monthly report.
+  Purchase and "購入を復元" (Restore Purchase) are on the Plus screen.
 
 Please note: the calendar fills in as the user records days over time. On a fresh
 installation the calendar is empty, which is the expected initial state.
@@ -57,14 +65,16 @@ installation the calendar is empty, which is the expected initial state.
 --------------------------------------------------
 4. EXTERNAL SERVICES, TOOLS OR PLATFORMS
 --------------------------------------------------
-None. The app makes no network requests whatsoever and functions entirely offline.
+The only external services are Apple's In-App Purchase and RevenueCat, which manages
+purchase status. RevenueCat receives purchase information, an anonymous app user ID
+and technical device and network information.
+Diary data is never sent to it.
 
-Specifically, the app does NOT use:
+The app does NOT use:
 - any data provider or backend server of our own
 - any authentication service (there are no accounts)
-- any payment processor (there are no purchases of any kind)
 - any AI or LLM service
-- any analytics, attribution, advertising or crash-reporting SDK
+- any analytics, attribution or advertising SDK
 
 All data (answers, memos, to-dos, settings) is stored in an SQLite database on
 the device and never leaves it. Notifications are local notifications scheduled
@@ -74,9 +84,9 @@ transmits a push token.
 --------------------------------------------------
 5. REGIONAL DIFFERENCES
 --------------------------------------------------
-There are none. The app behaves identically in every region.
-The user interface is Japanese only. There is no server, no region-dependent
-content, and no feature that is gated or altered by territory.
+The app is distributed in Japan only. The user interface is Japanese only.
+There is no region-dependent content, and no feature that is gated or altered by
+territory.
 
 --------------------------------------------------
 6. REGULATED INDUSTRIES AND THIRD-PARTY MATERIAL
@@ -101,8 +111,9 @@ ADDITIONAL NOTES
 - There is no user-generated content shared between users. Memos and to-dos are
   private to the device and are never uploaded or visible to anyone else.
   Therefore no content reporting or blocking mechanism is applicable.
-- There is no paid content, subscription or in-app purchase. All functionality is
-  free.
+- There is one non-consumable in-app purchase, "プラス" (Plus). There are no
+  subscriptions. Daily questions, answers, to-dos and the most recent 3 months of
+  the calendar remain free.
 
 Terms of Use:
 https://makeahistory164-bit.github.io/kimishidai-diary-legal/terms.html
