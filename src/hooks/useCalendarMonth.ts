@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { listDailyEntriesInRange } from '@/db/repositories/dailyEntryRepo';
 import { isPaywallEnabled } from '@/services/purchases';
 import { usePremium } from '@/hooks/usePremium';
@@ -27,21 +28,34 @@ export function useCalendarMonth() {
   const [loading, setLoading] = useState(true);
   const isPremium = usePremium();
 
-  const load = useCallback(async (y: number, m: number) => {
-    setLoading(true);
+  const latestRequest = useRef(0);
+
+  const load = useCallback(async (y: number, m: number, showSpinner: boolean) => {
+    // 月を素早く切り替えたときに、古い月の結果で上書きしない
+    const request = ++latestRequest.current;
+    if (showSpinner) setLoading(true);
     try {
       const start = `${y}-${pad(m)}-01`;
       const end = `${y}-${pad(m)}-${pad(daysInMonth(y, m))}`;
       const rows = await listDailyEntriesInRange(start, end);
-      setEntries(rows);
+      if (request === latestRequest.current) setEntries(rows);
     } finally {
-      setLoading(false);
+      if (request === latestRequest.current) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    load(year, month);
+    load(year, month, true);
   }, [year, month, load]);
+
+  // タブ画面は切り替えても破棄されないため、戻ってきたときに読み直さないと
+  // 他のタブで記録した内容がカレンダーやレポート導線に反映されない。
+  // スピナーを出すと戻るたびに画面がちらつくので、裏で更新する。
+  useFocusEffect(
+    useCallback(() => {
+      load(year, month, false);
+    }, [year, month, load])
+  );
 
   const isWithinFreeRange = useCallback(
     (y: number, m: number) => {

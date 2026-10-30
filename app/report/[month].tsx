@@ -28,7 +28,7 @@ const HALF_COMPARISON_TEXT: Record<HalfComparison, string> = {
 
 const CHANGE_TEXT: Record<NonNullable<CategoryReport['change']>, string> = {
   up: '先月より上向き',
-  down: '先月より下向き',
+  down: '先月より少なめ',
   same: '先月と同じくらい',
 };
 
