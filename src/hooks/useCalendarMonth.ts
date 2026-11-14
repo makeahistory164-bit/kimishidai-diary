@@ -3,9 +3,8 @@ import { useFocusEffect } from 'expo-router';
 import { listDailyEntriesInRange } from '@/db/repositories/dailyEntryRepo';
 import { isPaywallEnabled } from '@/services/purchases';
 import { usePremium } from '@/hooks/usePremium';
+import { isWithinFreeRange } from '@/services/freeRange';
 import type { DailyEntry } from '@/types/models';
-
-const FREE_RANGE_MONTHS = 3; // 12.2: 無料範囲は直近3ヶ月
 
 function pad(n: number): string {
   return String(n).padStart(2, '0');
@@ -57,29 +56,19 @@ export function useCalendarMonth() {
     }, [year, month, load])
   );
 
-  const isWithinFreeRange = useCallback(
-    (y: number, m: number) => {
-      const currentIndex = monthIndex(now.getFullYear(), now.getMonth() + 1);
-      const targetIndex = monthIndex(y, m);
-      const diff = currentIndex - targetIndex;
-      return diff >= 0 && diff < FREE_RANGE_MONTHS;
-    },
-    [now]
-  );
-
   /** @returns 'moved' | 'blocked'（無料範囲を超えるため8.6ペイウォールへ誘導すべき） */
   const goToPrevMonth = useCallback((): 'moved' | 'blocked' => {
     const prevIndex = monthIndex(year, month) - 1;
     const prevYear = Math.floor(prevIndex / 12);
     const prevMonth = (prevIndex % 12) + 1;
     // 購入手段がない環境では無料範囲の制限自体を適用しない（services/purchases 参照）
-    if (isPaywallEnabled() && !isPremium && !isWithinFreeRange(prevYear, prevMonth)) {
+    if (isPaywallEnabled() && !isPremium && !isWithinFreeRange(prevYear, prevMonth, now)) {
       return 'blocked';
     }
     setYear(prevYear);
     setMonth(prevMonth);
     return 'moved';
-  }, [year, month, isPremium, isWithinFreeRange]);
+  }, [year, month, isPremium, now]);
 
   const goToNextMonth = useCallback((): 'moved' | 'blocked' => {
     const currentIndex = monthIndex(now.getFullYear(), now.getMonth() + 1);

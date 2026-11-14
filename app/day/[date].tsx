@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { loadEntryDetailByDate } from '@/services/dailyEntryService';
 import { useTodayEntry } from '@/hooks/useTodayEntry';
@@ -10,6 +10,10 @@ import { SCALE_LABELS } from '@/components/AnswerScale';
 import { normalizeAnswerValue, applyPolarity } from '@/services/axisScore';
 import { getAxisScoreColor, NEUTRAL_COLORS } from '@/constants/colors';
 import { toDateKey, formatDateLabel } from '@/lib/id';
+import { FREE_RANGE_MONTHS, isWithinFreeRange, parseDateKey } from '@/services/freeRange';
+import { isPaywallEnabled } from '@/services/purchases';
+import { usePremiumStatus } from '@/hooks/usePremium';
+import { Button } from '@/components/ui/Button';
 import type { DailyEntryDetail } from '@/types/models';
 
 /** 8.3 日別詳細画面。当日のみ編集可、過去日は閲覧のみ。 */
@@ -64,6 +68,16 @@ function TodayEditableView() {
 function ReadOnlyDayView({ dateKey }: { dateKey: string }) {
   const [entry, setEntry] = useState<DailyEntryDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const premium = usePremiumStatus();
+
+  // カレンダーは無料範囲を超える月へ移動させないが、この画面はディープリンクや
+  // 通知からURLで直接開ける。report/[month].tsx と同様、画面側でも塞ぐ。
+  // 購入手段がない環境では制限ごと外す（services/purchases の isPaywallEnabled 参照）。
+  const parsed = parseDateKey(dateKey);
+  const locked =
+    isPaywallEnabled() &&
+    premium === false &&
+    (parsed === null || !isWithinFreeRange(parsed.year, parsed.month));
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -76,8 +90,37 @@ function ReadOnlyDayView({ dateKey }: { dateKey: string }) {
   }, [dateKey]);
 
   useEffect(() => {
+    // 閲覧できない日はそもそも読み込まない
+    if (locked) {
+      setLoading(false);
+      return;
+    }
     load();
-  }, [load]);
+  }, [load, locked]);
+
+  // 判定前（premium === null）に未購入として扱うと、購入済みの人にも
+  // 一瞬ペイウォールが出る。判定が終わるまでは読み込み中として扱う。
+  if (premium === null) {
+    return (
+      <SafeAreaView style={styles.center}>
+        <ActivityIndicator size="large" color={NEUTRAL_COLORS.accent} />
+      </SafeAreaView>
+    );
+  }
+
+  if (locked) {
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <Stack.Screen options={{ title: parsed ? formatDateLabel(dateKey) : '日別詳細' }} />
+        <View style={styles.content}>
+          <Text style={styles.emptyText}>
+            直近{FREE_RANGE_MONTHS}ヶ月より前の記録は「プラス」で閲覧できます。
+          </Text>
+          <Button label="プラスについて見る" onPress={() => router.replace('/paywall')} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (loading) {
     return (
